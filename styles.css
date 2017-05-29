@@ -1,0 +1,59 @@
+.hpgrey {
+  width: 300px;
+  height: 20px;
+  background-color: #888888;
+}
+
+.hpdead {
+  width: 300px;
+  height: 20px;
+  background-color: #FF0000;
+}
+
+.hpgreen {
+  height: 20px;
+  color: white;
+  text-align: center;
+  background-color: green;
+}
+
+#healthbars, #options {
+  width: 700px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px;
+}
+
+#healthbars {
+    border: 1px solid red;
+
+}
+
+.health {
+  text-align: center;
+}
+
+#log {
+  width: 700px;
+  text-align: center;
+  border: 1px dotted #3d4e68;
+}
+
+#endlabel{
+  width: 700px;
+  font-size: 30px;
+  text-align: center;
+  font-weight: 700;
+  color: red; 
+}
+
+.player {
+  background-color: #a3b1c6;
+  color: #062451;
+}
+
+.monster {
+  background-color: #c6a3a3;
+  color: #500505
+}

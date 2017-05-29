@@ -1,0 +1,180 @@
+<div id="exercise">
+
+</div>
+
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>The HTML5 Herald</title>
+  <script src="https://unpkg.com/vue"></script>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div id="app">
+    <div id="endlabel">{{endLabel}}</div>
+    <div id="healthbars">
+      <div class="health">
+        <div>Player Health: </div>
+        <div :class="playerHP > 0 ? 'hpgrey' : 'hpdead'">
+          <div v-show="playerHP" class="hpgreen" :style="{ width: playerHP * 3}">{{playerHP}}</div>
+        </div>
+      </div>
+      <div class="health">
+        <div>Monster Health:</div>
+        <div :class="monsterHP > 0 ? 'hpgrey' : 'hpdead'">
+          <div v-show="monsterHP" class="hpgreen" :style="{ width: monsterHP * 3}">{{monsterHP}}</div>
+        </div>
+      </div>
+
+    </div>
+    <div id="options">
+      <template v-if="!gameOn">
+        <button id="startgame" @click="startGame">Start Game</button>
+      </template>
+      <template v-if="gameOn">
+        <button id="doAttack" @click="doAttack">Attack</button>
+        <button id="doMagic" @click="doMagic">Magic</button>
+        <button id="doHeal" @click="doHeal">Heal</button>
+        <button id="reset" @click="startGame">Reset</button>
+      </template>
+    </div>
+    <div id="log">
+      <template  v-for="entry in log">
+      <div :class="entry.char">{{entry.msg}}</div>
+      </template>
+    </div>
+  </div>
+</body>
+<script>
+  const endgame = ({
+    vm,
+    isVictory
+  }) => {
+    console.log("endgame", {
+      isVictory
+    })
+    vm.gameOn = false;
+    vm.endLabel = isVictory ? "VICTORY!" : "DEFEAT!";
+    setTimeout(() => {
+      console.log("restarting");
+      vm.startGame();
+    }, 5000)
+  };
+
+  const attack = (vm) => {
+    let dam = Math.ceil(Math.random() * 6) + 1;
+    vm.monsterHP -= dam;
+    vm.log.push({char: 'player', msg: `Player attacks for ${dam} damage!`})
+    if (vm.monsterHP <= 0) {
+      vm.monsterHP = 0; 
+      endgame({
+        vm,
+        isVictory: true
+      });
+    }
+  }
+
+  const magic = (vm) => {
+    let dam = Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6);
+    vm.monsterHP -= dam;
+    vm.log.push({char: 'player', msg:`Player attacks for ${dam} damage!`})
+    if (vm.monsterHP <= 0) {
+      vm.monsterHP = 0; 
+      endgame({
+        vm,
+        isVictory: true
+      });
+    }
+  }
+
+  const heal = (vm) => {
+    let hpup = Math.min(100 - vm.playerHP, 10);
+    vm.playerHP += hpup
+    vm.log.push({char: 'player', msg:`Player casts Heal and heals ${hpup} HP`})
+  }
+
+  const counter = (vm) => {
+    if (vm.monsterHP > 0) {
+      let dam = Math.ceil(Math.random() * 6) + 1;
+      vm.playerHP -= dam;
+      vm.log.push({char: 'monster', msg: `Monster counters for ${dam} damage.`});
+      if (vm.playerHP <= 0) {
+        vm.playerHP = 0; 
+        endgame({
+          vm,
+          isVictory: false
+        });
+      }
+    }
+  }
+
+
+  new Vue({
+    el: "#app",
+    data: {
+      playerHP: 100,
+      monsterHP: 100,
+      gameOn: false,
+      log: [],
+      endLabel: '',
+    },
+    computed: {
+      congrats: function () {
+        return this.monsterHP >= 0 ? "VICTORY!" : "DEFEAT!";
+      }
+    },
+    methods: {
+      startGame: function () {
+        this.playerHP = 100;
+        this.monsterHP = 100;
+        this.gameOn = true;
+        this.log = [];
+        this.endLabel = "";
+      },
+      doAttack: function () {
+        attack(this);
+        if (!this.gameOver) {
+          counter(this);
+        }
+      },
+      doMagic: function () {
+        magic(this);
+        if (!this.gameOver) {
+          counter(this);
+        }
+      },
+      doHeal: function () {
+        heal(this);
+        if (!this.gameOver) {
+          counter(this);
+        }
+      },
+
+    }
+
+  })
+</script>
+<style>
+
+</style>
+
+</html>
